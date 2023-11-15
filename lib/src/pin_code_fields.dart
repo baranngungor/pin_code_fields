@@ -14,6 +14,9 @@ class PinCodeTextField extends StatefulWidget {
   /// you already know what it does i guess :P default is false
   final bool obscureText;
 
+  ///For block popup on Paste
+  final bool showPopup;
+
   /// Character used for obscuring text if obscureText is true.
   ///
   /// Must not be empty. Single character is recommended.
@@ -220,6 +223,7 @@ class PinCodeTextField extends StatefulWidget {
     required this.length,
     this.controller,
     this.obscureText = false,
+    this.showPopup = true,
     this.obscuringCharacter = '●',
     this.obscuringWidget,
     this.blinkWhenObscuring = false,
@@ -854,12 +858,16 @@ class _PinCodeTextFieldState extends State<PinCodeTextField>
                     ? () async {
                         var data = await Clipboard.getData("text/plain");
                         if (data?.text?.isNotEmpty ?? false) {
-                          if (widget.beforeTextPaste != null) {
-                            if (widget.beforeTextPaste!(data!.text)) {
-                              _showPasteDialog(data.text!);
+                         if (!widget.showPopup) {
+                            _textEditingController!.text = data!.text!;
+                         } else {
+                            if (widget.beforeTextPaste != null) {
+                              if (widget.beforeTextPaste!(data!.text)) {
+                                _showPasteDialog(data.text!);
+                              }
+                            } else {
+                              _showPasteDialog(data!.text!);
                             }
-                          } else {
-                            _showPasteDialog(data!.text!);
                           }
                         }
                       }
